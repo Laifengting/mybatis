@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace:名称空间（类似于包名+类名，用于找到 SQL 语句所有的 mapper.xml 文件）
+	指定为接口的全类名
+-->
+<mapper namespace = "com.lft.mybatis.chapter03.dao.EmployeeMapper">
+
+	<!--
+		select 标签
+			id:唯一标识，用于找到执行的 SQL 语句(跟接口中的方法一一对应，默认以方法名称作为id)
+			resultType:返回值类型
+			databaseId:告诉 MyBatis 这条SQL要在哪个数据库中执行(会有精准匹配，优先匹配带数据库标识的)
+			#{id}:从传递过来的参数中取出 id 值
+	-->
+	<!-- Employee getEmpById(Integer id); -->
+	<!-- 根据 id 查询员工 -->
+	<select id = "getEmpById"
+			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+		select *
+		from tbl_employee
+		where id = #{id}
+	</select>
+
+	<!--
+		insert 标签
+			id:唯一标识，用于找到执行的 SQL 语句(跟接口中的方法一一对应，默认以方法名称作为id)
+			parameterType:参数类型
+			useGeneratedKeys:使用自动生成的主键
+			keyProperty:指定主键自动生成的值封装给哪个属性
+	-->
+	<!--	void addEmp(Employee employee);-->
+	<!-- 添加员工 -->
+	<insert id = "addEmp"
+			parameterType = "com.lft.mybatis.chapter03.entity.Employee"
+			databaseId = "mysql"
+			useGeneratedKeys = "true"
+			keyProperty = "id">
+		insert into tbl_employee(last_name, email, gender)
+		values (#{lastName}, #{email}, #{gender})
+	</insert>
+
+	<!--
+		【注意】Oracle 不支持主键自动生成。Oracle 每次插入的数据的主键是从序列中取值。
+			select * from user_sequences; // 查询所有用户序列
+			select EMPLOYEES_SEQ.nextval from dual; // 获取下一个序列号
+	-->
+	<!--	void addEmp(Employee employee);-->
+	<!-- 添加员工 -->
+	<insert id = "addEmp"
+			parameterType = "com.lft.mybatis.chapter03.entity.Employee"
+			databaseId = "oracle">
+		/*
+		keyProperty:查出的主键值封装给 JavaBean 的哪个属性
+		order:[BEFORE|AFTER] 指定 selectKey 是先执行还是后执行
+		resultType:查询出来的返回值类型
+		*/
+		<selectKey keyProperty = "id"
+				   order = "BEFORE"
+				   resultType = "integer">
+			/*
+			编写查询主键的 SQL 语句
+			获取序列中的下一个值
+			*/
+			select EMPLOYEES_SEQ.nextval from dual;
+			/* 获取序列中的当前值 */
+			/*select EMPLOYEES_SEQ.currval from dual;*/
+		</selectKey>
+		/* 插入的时候 主键是从序列中拿到值*/
+		insert into employees(EMPLOYEE_ID, last_name, email, gender)
+		values (#{id},#{lastName}, #{email}, #{gender})
+	</insert>
+
+	<!--	void updateEmp(Employee employee);-->
+	<update id = "updateEmp"
+			parameterType = "com.lft.mybatis.chapter03.entity.Employee">
+		update tbl_employee
+		set last_name = #{lastName},
+			email     = #{email},
+			gender    = #{gender}
+		where id = #{id}
+	</update>
+
+	<!--	void deleteEmpById(Integer id);-->
+	<delete id = "deleteEmpById"
+			parameterType = "integer">
+		delete
+		from tbl_employee
+		where id = #{id}
+	</delete>
+
+</mapper>
+

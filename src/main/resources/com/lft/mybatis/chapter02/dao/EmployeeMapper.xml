@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace:名称空间（类似于包名+类名，用于找到 SQL 语句所有的 mapper.xml 文件）
+	指定为接口的全类名
+-->
+<mapper namespace = "com.lft.mybatis.chapter02.dao.EmployeeMapper">
+
+	<!--
+		id:唯一标识，用于找到执行的 SQL 语句(跟接口中的方法一一对应，默认以方法名称作为id)
+		resultType:返回值类型
+		databaseId:告诉 MyBatis 这条SQL要在哪个数据库中执行(会有精准匹配，优先匹配带数据库标识的)
+		#{id}:从传递过来的参数中取出 id 值
+	-->
+	<select id = "getEmpById" resultType = "emp">
+		select *
+		from tbl_employee
+		where id = #{id}
+	</select>
+	<select id = "getEmpById" resultType = "emp" databaseId = "mysql">
+		select *
+		from tbl_employee
+		where id = #{id}
+	</select>
+	<select id = "getEmpById" resultType = "emp" databaseId = "oracle">
+		select id, lastName, email, gender
+		from employees
+		where id = #{id}
+	</select>
+</mapper>
+

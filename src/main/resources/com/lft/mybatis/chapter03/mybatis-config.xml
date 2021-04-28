@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+		PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--
+标签详解——标签必须是按照下面的顺序。
+configuration
+	properties
+	settings
+	typeAliases
+	typeHandlers
+	objectFactory
+	objectWrapperFactory
+	reflectorFactory
+	plugins
+	environments
+	databaseIdProvider
+	mappers
+-->
+<configuration>
+	<!--
+		1. properties标签:MyBatis 用来引入外部 properties 配置文件的内容。
+			属性：
+				resource:引入类路径下资源
+				url:引入网络资源或者磁盘路径下的资源
+	-->
+	<properties resource = "jdbc/jdbc.properties">
+		<!-- 启用默认值特性 -->
+		<property name = "org.apache.ibatis.parsing.PropertyParser.enable-default-value"
+				  value = "true"/>
+		<!-- 修改默认值的分隔符 -->
+		<property name = "org.apache.ibatis.parsing.PropertyParser.default-value-separator"
+				  value = "?:"/>
+	</properties>
+
+	<!--
+		2. settings标签:包含很多重要的设置项
+			子标签：setting:用来设置每一个设置项
+				属性：	name:属性名称
+						value:属性值
+	-->
+	<settings>
+		<setting name = "mapUnderscoreToCamelCase"
+				 value = "true"/>
+	</settings>
+
+	<!--
+		3. typeAliases标签:别名处理器,可以为我们的 Java 类型起别名（不区分大小写）
+			子标签: 	typeAlias:为单个 Java 类型起别名
+					属性:	type:Java 类的全类名
+						alias:指定新的别名（不填写会有默认别名：类名小写）
+			子标签: 	package:为某个包下及所有子包下的所有类起默认别名
+					属性:	name:包名
+					缺点:	如果子包中有相同类名，就会异常。org.apache.ibatis.type.TypeException: The alias 'Employee' is already mapped to the value 'com.lft.mybatis.chapter02.entity.po.Employee'.
+					解决:	在子包或者当前类上加个别名注解 @Alias ("emp")
+			注解:	@Alias("别名"):批量起别名的情况下，如果有别名重复的类，使用这个注解。
+	-->
+	<typeAliases>
+		<!--<typeAlias type = "com.lft.mybatis.chapter02.entity.Employee" alias = "emp"/>-->
+		<package name = "com.lft.mybatis.chapter03.entity"/>
+	</typeAliases>
+	<!--
+		4. environments标签:用于配置多种环境
+			属性:	default:指定默认使用哪个环境。用于开发/测试/生产环境的快速切换
+			子标签:	environment:配置单个具体的环境（必须有：transactionManager 和 dataSource 这两个标签）
+				属性:	id:代表当前环境的唯一标识
+					子标签:	transactionManager:事务管理器
+						属性:	type:事务管理器类型:JDBC(JdbcTransactionFactory)|MANAGED(ManagedTransactionFactory)
+									自定义事务管理器:实现 TransactionFactory 接口，重写两个方法，然后在这里的 type 指定为全类名
+					子标签:	dataSource:数据源
+						属性:	type:数据源使用类型:UNPOOLED(UnpooledDataSourceFactory)|POOLED(PooledDataSourceFactory)|JNDI(JndiDataSourceFactory)
+									自定义数据源:实现 DataSourceFactory 接口，，重写两个方法，然后在这里的 type 指定为全类名
+	-->
+	<environments default = "dev_mysql">
+		<!-- 环境 1 -->
+		<environment id = "dev_mysql">
+			<transactionManager type = "JDBC"/>
+			<dataSource type = "POOLED">
+				<property name = "driver"
+						  value = "${jdbc.driver}"/>
+				<property name = "url"
+						  value = "${jdbc.url}"/>
+				<!--
+					从 MyBatis 3.4.2 开始，你可以为占位符指定一个默认值。
+					但是这个特性默认是关闭的，要启用这个特性需要在 properties 标签中开启。
+				-->
+				<property name = "username"
+						  value = "${jdbc.username?:root}"/>
+				<property name = "password"
+						  value = "${jdbc.password}"/>
+			</dataSource>
+		</environment>
+		<!-- 环境 2 -->
+		<environment id = "dev_oracle">
+			<transactionManager type = "JDBC"/>
+			<dataSource type = "POOLED">
+				<property name = "driver"
+						  value = "${oracle.driver}"/>
+				<property name = "url"
+						  value = "${oracle.url}"/>
+				<property name = "username"
+						  value = "${oracle.username?:root}"/>
+				<property name = "password"
+						  value = "${oracle.password}"/>
+			</dataSource>
+		</environment>
+	</environments>
+	<!--
+		5. databaseIdProvider:多数据库
+			属性:	type:DB_VENDOR(VendorDatabaseIdProvider):作用就是得到数据库厂商的标识，
+					驱动自带 getDatabaseProductName()，MyBatis 就能根据数据库厂商标识来执行不同的SQL
+					MySQL,Oracle,SQL Server
+	-->
+	<databaseIdProvider type = "DB_VENDOR">
+		<!-- 为不同的数据库厂商起不同的名字 -->
+		<property name = "MySQL"
+				  value = "mysql"/>
+		<property name = "Oracle"
+				  value = "oracle"/>
+		<property name = "SQL Server"
+				  value = "sqlserver"/>
+	</databaseIdProvider>
+
+	<!--
+		6. mappers:将 SQL 映射注册到全局配置中
+			子标签:	mapper:注册一个 SQL 映射
+				属性:	resource:引用类路径下的 SQL 映射文件（注册配置文件）
+						url:引用网络路径或者磁盘路径下的 SQL 映射文件（注册配置文件）
+						class:引用接口（注册接口）
+							注意:	有 SQL 映射文件，映射文件名必须和接口同名，并且跟接口在同一目录中。
+									没有 SQL 映射文件，所有的 SQL 都是利用注解写在接口上。
+							推荐:	比较重要的，复杂的 Dao 接口我们自己写 SQL 映射文件。
+									不重要的，简单的 Dao 接口为了开发快速可以直接使用注解。
+			子标签:	package:注册包中所有的映射文件
+				属性:	name:包名
+							注意:	有 SQL 映射文件，映射文件名必须和接口同名，并且跟接口在同一目录中。
+									没有 SQL 映射文件，所有的 SQL 都是利用注解写在接口上。
+
+			SQL映射文件一定要注册到全局配置文件中
+	-->
+	<mappers>
+		<!--<mapper resource = "com/lft/mybatis/chapter02/mapper/EmployeeMapper.xml"/>-->
+		<!--<mapper url = "file:///var/mappers/AuthorMapper.xml"/>-->
+		<!--<mapper class = "com.lft.mybatis.chapter02.dao.EmployeeMapperAnnotation"/>-->
+		<package name = "com.lft.mybatis.chapter03.dao"/>
+	</mappers>
+</configuration>

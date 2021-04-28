@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace:名称空间（类似于包名+类名，用于找到 SQL 语句所有的 mapper.xml 文件）
+-->
+<mapper namespace = "com.lft.mybatis.EmployeeMapper">
+
+	<!--
+		id:唯一标识，用于找到执行的 SQL 语句
+		resultType:返回值类型
+		#{id}:从传递过来的参数中取出 id 值
+	-->
+	<select id = "selectEmp"
+			resultType = "com.lft.mybatis.chapter01.entity.Employee">
+		select id, last_name lastName, gender, email
+		from tbl_employee
+		where id = #{id}
+	</select>
+</mapper>
+
