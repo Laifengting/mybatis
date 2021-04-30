@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration debug = "true"
-					 xmlns:log4j = 'http://jakarta.apache.org/log4j/'>
+<log4j:configuration xmlns:log4j = 'http://jakarta.apache.org/log4j/'>
 
 	<!-- ========================== 自定义输出格式说明================================ -->
 	<!-- %p 输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL -->
@@ -25,156 +24,171 @@
 
 	<appender name = "CONSOLE"
 			  class = "org.apache.log4j.ConsoleAppender">
-		<!-- <param name="Target" value="System.out"/> -->
+		<!--<param name = "Target"
+			   value = "System.out"/>-->
+		<param name = "Encoding"
+			   value = "UTF-8"/>
+		<layout class = "org.apache.log4j.PatternLayout">
+			<param name = "ConversionPattern"
+				   value = "%-5p %d{yyyy-MM-dd HH:mm:ss.SSS} %m  (%F:%L) \n"/>
+			<!--value = "%-5p %d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c  Method: %l ]%n%p:%m%n"/>-->
+		</layout>
+		<!--<filter class = "org.apache.log4j.varia.LevelRangeFilter">
+			<param name = "LevelMin"
+				   value = "DEBUG"/>
+			<param name = "LevelMax"
+				   value = "DEBUG"/>
+		</filter>-->
+	</appender>
+
+	<!-- output the debug   -->
+	<!--  <appender name="log4jDebug" class="org.apache.log4j.DailyRollingFileAppender">
+		 <param name="File" value="log_"/>
+		 <param name="MaxFileSize" value="KB"/>
+		 <param name="MaxBackupIndex" value="2"/> -->
+	<appender name = "log4jDebug"
+			  class = "org.apache.log4j.rolling.RollingFileAppender">
+		<param name = "Append"
+			   value = "true"/>
+		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name = "FileNamePattern"
+				   value = "./log/log_%d{yyyy-MM-dd}.log"/>
+		</rollingPolicy>
+		<layout class = "org.apache.log4j.PatternLayout">
+			<param name = "ConversionPattern"
+				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>
+		</layout>
+		<filter class = "org.apache.log4j.varia.LevelRangeFilter">
+			<param name = "LevelMin"
+				   value = "DEBUG"/>
+			<param name = "LevelMax"
+				   value = "DEBUG"/>
+		</filter>
+	</appender>
+	<!--  <appender name="log4jInfo" class="org.apache.log4j.DailyRollingFileAppender">
+		 <param name="File" value="log_"/>
+		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/>
+		 <param name="Append" value="true"/>
+		<param name="MaxFileSize" value="5KB"/>
+		 <param name="MaxBackupIndex" value="2"/> -->
+	<appender name = "log4jInfo"
+			  class = "org.apache.log4j.rolling.RollingFileAppender">
+		<param name = "Append"
+			   value = "true"/>
+		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name = "FileNamePattern"
+				   value = "./log/log_%d{yyyy-MM-dd}.log"/>
+		</rollingPolicy>
 		<layout class = "org.apache.log4j.PatternLayout">
 			<param name = "ConversionPattern"
 				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c  Method: %l ]%n%p:%m%n"/>
 		</layout>
-		<!--  <filter class="org.apache.log4j.varia.LevelRangeFilter">
-			<param name="LevelMin" value="DEBUG"/>
-			<param name="LevelMax" value="DEBUG"/>
-		</filter> -->
+		<filter class = "org.apache.log4j.varia.LevelRangeFilter">
+			<param name = "LevelMin"
+				   value = "INFO"/>
+			<param name = "LevelMax"
+				   value = "INFO"/>
+		</filter>
 	</appender>
-<!--	&lt;!&ndash; output the debug   &ndash;&gt;-->
-<!--	&lt;!&ndash;  <appender name="log4jDebug" class="org.apache.log4j.DailyRollingFileAppender">-->
-<!--		 <param name="File" value="log_"/>-->
-<!--		 <param name="MaxFileSize" value="KB"/>-->
-<!--		 <param name="MaxBackupIndex" value="2"/> &ndash;&gt;-->
-<!--	<appender name = "log4jDebug"-->
-<!--			  class = "org.apache.log4j.rolling.RollingFileAppender">-->
-<!--		<param name = "Append"-->
-<!--			   value = "true"/>-->
-<!--		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">-->
-<!--			<param name = "FileNamePattern"-->
-<!--				   value = "./log/log_%d{yyyy-MM-dd}.log"/>-->
-<!--		</rollingPolicy>-->
-<!--		<layout class = "org.apache.log4j.PatternLayout">-->
-<!--			<param name = "ConversionPattern"-->
-<!--				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>-->
-<!--		</layout>-->
-<!--		<filter class = "org.apache.log4j.varia.LevelRangeFilter">-->
-<!--			<param name = "LevelMin"-->
-<!--				   value = "DEBUG"/>-->
-<!--			<param name = "LevelMax"-->
-<!--				   value = "DEBUG"/>-->
-<!--		</filter>-->
-<!--	</appender>-->
-<!--	&lt;!&ndash;  <appender name="log4jInfo" class="org.apache.log4j.DailyRollingFileAppender">-->
-<!--		 <param name="File" value="log_"/>-->
-<!--		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/>-->
-<!--		 <param name="Append" value="true"/>-->
-<!--		<param name="MaxFileSize" value="5KB"/>-->
-<!--		 <param name="MaxBackupIndex" value="2"/> &ndash;&gt;-->
-<!--	<appender name = "log4jInfo"-->
-<!--			  class = "org.apache.log4j.rolling.RollingFileAppender">-->
-<!--		<param name = "Append"-->
-<!--			   value = "true"/>-->
-<!--		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">-->
-<!--			<param name = "FileNamePattern"-->
-<!--				   value = "./log/log_%d{yyyy-MM-dd}.log"/>-->
-<!--		</rollingPolicy>-->
-<!--		<layout class = "org.apache.log4j.PatternLayout">-->
-<!--			<param name = "ConversionPattern"-->
-<!--				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c  Method: %l ]%n%p:%m%n"/>-->
-<!--		</layout>-->
-<!--		<filter class = "org.apache.log4j.varia.LevelRangeFilter">-->
-<!--			<param name = "LevelMin"-->
-<!--				   value = "INFO"/>-->
-<!--			<param name = "LevelMax"-->
-<!--				   value = "INFO"/>-->
-<!--		</filter>-->
-<!--	</appender>-->
-<!--	&lt;!&ndash;  <appender name="log4jWarn" class="org.apache.log4j.DailyRollingFileAppender">-->
-<!--		 <param name="File" value="/log_"/>-->
-<!--		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/>-->
-<!--		 <param name="Append" value="true"/>-->
-<!--		 <param name="MaxFileSize" value="5KB"/>-->
-<!--		 <param name="MaxBackupIndex" value="2"/> &ndash;&gt;-->
-<!--	<appender name = "log4jWarn"-->
-<!--			  class = "org.apache.log4j.rolling.RollingFileAppender">-->
-<!--		<param name = "Append"-->
-<!--			   value = "true"/>-->
-<!--		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">-->
-<!--			<param name = "FileNamePattern"-->
-<!--				   value = "./log/log_%d{yyyy-MM-dd}.log"/>-->
-<!--		</rollingPolicy>-->
-<!--		<layout class = "org.apache.log4j.PatternLayout">-->
-<!--			<param name = "ConversionPattern"-->
-<!--				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>-->
-<!--		</layout>-->
-<!--		<filter class = "org.apache.log4j.varia.LevelRangeFilter">-->
-<!--			<param name = "LevelMin"-->
-<!--				   value = "WARN"/>-->
-<!--			<param name = "LevelMax"-->
-<!--				   value = "WARN"/>-->
-<!--		</filter>-->
-<!--	</appender>-->
-<!--	&lt;!&ndash;  <appender name="log4jError" class="org.apache.log4j.DailyRollingFileAppender"> &ndash;&gt;-->
-<!--	<appender name = "log4jError"-->
-<!--			  class = "org.apache.log4j.rolling.RollingFileAppender">-->
-<!--		&lt;!&ndash;  <param name="File" value="/error_"/>-->
-<!--		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/> &ndash;&gt;-->
-<!--		<param name = "Append"-->
-<!--			   value = "true"/>-->
-<!--		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">-->
-<!--			<param name = "FileNamePattern"-->
-<!--				   value = "./log/error_%d{yyyy-MM-dd}.log"/>-->
-<!--		</rollingPolicy>-->
+	<!--  <appender name="log4jWarn" class="org.apache.log4j.DailyRollingFileAppender">
+		 <param name="File" value="/log_"/>
+		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/>
+		 <param name="Append" value="true"/>
+		 <param name="MaxFileSize" value="5KB"/>
+		 <param name="MaxBackupIndex" value="2"/> -->
+	<appender name = "log4jWarn"
+			  class = "org.apache.log4j.rolling.RollingFileAppender">
+		<param name = "Append"
+			   value = "true"/>
+		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name = "FileNamePattern"
+				   value = "./log/log_%d{yyyy-MM-dd}.log"/>
+		</rollingPolicy>
+		<layout class = "org.apache.log4j.PatternLayout">
+			<param name = "ConversionPattern"
+				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>
+		</layout>
+		<filter class = "org.apache.log4j.varia.LevelRangeFilter">
+			<param name = "LevelMin"
+				   value = "WARN"/>
+			<param name = "LevelMax"
+				   value = "WARN"/>
+		</filter>
+	</appender>
+	<!--  <appender name="log4jError" class="org.apache.log4j.DailyRollingFileAppender"> -->
+	<appender name = "log4jError"
+			  class = "org.apache.log4j.rolling.RollingFileAppender">
+		<!--  <param name="File" value="/error_"/>
+		 <param name="DatePattern" value="'.log'yyyy-MM-dd"/> -->
+		<param name = "Append"
+			   value = "true"/>
+		<rollingPolicy class = "org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name = "FileNamePattern"
+				   value = "./log/error_%d{yyyy-MM-dd}.log"/>
+		</rollingPolicy>
 
-<!--		&lt;!&ndash;   <param name="MaxFileSize" value="5KB"/> &ndash;&gt;-->
-<!--		&lt;!&ndash;   <param name="MaxBackupIndex" value="2"/> &ndash;&gt;-->
-<!--		<layout class = "org.apache.log4j.PatternLayout">-->
-<!--			<param name = "ConversionPattern"-->
-<!--				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>-->
-<!--		</layout>-->
-<!--		<filter class = "org.apache.log4j.varia.LevelRangeFilter">-->
-<!--			<param name = "LevelMin"-->
-<!--				   value = "ERROR"/>-->
-<!--			<param name = "LevelMax"-->
-<!--				   value = "ERROR"/>-->
-<!--		</filter>-->
-<!--	</appender>-->
-<!--	&lt;!&ndash;通过<category></category>的定义可以将各个包中的类日志输出到不同的日志文件中&ndash;&gt;-->
-<!--	&lt;!&ndash;     <category name="com.gzy">-->
-<!--			<priority value="debug" />-->
-<!--			<appender-ref ref="log4jTestLogInfo" />-->
-<!--			<appender-ref ref="log4jTestDebug" />-->
-<!--		</category> &ndash;&gt;-->
-<!--	<appender name = "MAIL"-->
-<!--			  class = "org.apache.log4j.net.SMTPAppender">-->
-<!--		<param name = "threshold"-->
-<!--			   value = "debug"/>-->
-<!--		&lt;!&ndash; 日志的错误级别-->
-<!--		 <param name="threshold" value="error"/>-->
-<!--		&ndash;&gt;-->
-<!--		&lt;!&ndash; 缓存文件大小，日志达到512K时发送Email &ndash;&gt;-->
-<!--		<param name = "BufferSize"-->
-<!--			   value = "512"/>&lt;!&ndash; 单位K &ndash;&gt;-->
-<!--		<param name = "From"-->
-<!--			   value = "test@163.com"/>-->
-<!--		<param name = "SMTPHost"-->
-<!--			   value = "smtp.163.com"/>-->
-<!--		<param name = "Subject"-->
-<!--			   value = "juyee-log4jMessage"/>-->
-<!--		<param name = "To"-->
-<!--			   value = "test@163.com"/>-->
-<!--		<param name = "SMTPUsername"-->
-<!--			   value = "test"/>-->
-<!--		<param name = "SMTPPassword"-->
-<!--			   value = "test"/>-->
-<!--		<layout class = "org.apache.log4j.PatternLayout">-->
-<!--			<param name = "ConversionPattern"-->
-<!--				   value = "%-d{yyyy-MM-dd HH:mm:ss.SSS a} [%p]-[%c] %m%n"/>-->
-<!--		</layout>-->
-<!--	</appender>-->
+		<!--   <param name="MaxFileSize" value="5KB"/> -->
+		<!--   <param name="MaxBackupIndex" value="2"/> -->
+		<layout class = "org.apache.log4j.PatternLayout">
+			<param name = "ConversionPattern"
+				   value = "%d{yyyy-MM-dd HH:mm:ss a} [Thread: %t][ Class:%c Method: %l ]%n%p:%m%n"/>
+		</layout>
+		<filter class = "org.apache.log4j.varia.LevelRangeFilter">
+			<param name = "LevelMin"
+				   value = "ERROR"/>
+			<param name = "LevelMax"
+				   value = "ERROR"/>
+		</filter>
+	</appender>
+	<!--通过<category></category>的定义可以将各个包中的类日志输出到不同的日志文件中-->
+	<!--     <category name="com.gzy">
+			<priority value="debug" />
+			<appender-ref ref="log4jTestLogInfo" />
+			<appender-ref ref="log4jTestDebug" />
+		</category> -->
+	<appender name = "MAIL"
+			  class = "org.apache.log4j.net.SMTPAppender">
+		<param name = "threshold"
+			   value = "debug"/>
+		<!-- 日志的错误级别
+		 <param name="threshold" value="error"/>
+		-->
+		<!-- 缓存文件大小，日志达到512K时发送Email -->
+		<param name = "BufferSize"
+			   value = "512"/><!-- 单位K -->
+		<param name = "From"
+			   value = "test@163.com"/>
+		<param name = "SMTPHost"
+			   value = "smtp.163.com"/>
+		<param name = "Subject"
+			   value = "juyee-log4jMessage"/>
+		<param name = "To"
+			   value = "test@163.com"/>
+		<param name = "SMTPUsername"
+			   value = "test"/>
+		<param name = "SMTPPassword"
+			   value = "test"/>
+		<layout class = "org.apache.log4j.PatternLayout">
+			<param name = "ConversionPattern"
+				   value = "%-d{yyyy-MM-dd HH:mm:ss.SSS a} [%p]-[%c] %m%n"/>
+		</layout>
+	</appender>
+
+	<logger name = "java.sql">
+		<level value = "DEBUG"/>
+	</logger>
+
+	<logger name = "org.apache.ibatis">
+		<level value = "WARN"/>
+	</logger>
 
 	<root>
-		<priority value = "debug"/>
+		<priority value = "DEBUG"/>
 		<appender-ref ref = "CONSOLE"/>
-<!--		<appender-ref ref = "log4jDebug"/>-->
-<!--		<appender-ref ref = "log4jInfo"/>-->
-<!--		<appender-ref ref = "log4jWarn"/>-->
-<!--		<appender-ref ref = "log4jError"/>-->
-		<!-- <appender-ref ref="MAIL" /> -->
+		<!--<appender-ref ref = "log4jDebug"/>
+		<appender-ref ref = "log4jInfo"/>
+		<appender-ref ref = "log4jWarn"/>
+		<appender-ref ref = "log4jError"/>
+		<appender-ref ref = "MAIL"/>-->
 	</root>
 </log4j:configuration>

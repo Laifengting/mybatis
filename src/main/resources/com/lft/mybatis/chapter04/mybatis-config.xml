@@ -40,8 +40,9 @@ configuration
 						value:属性值
 	-->
 	<settings>
-		<setting name = "mapUnderscoreToCamelCase"
-				 value = "true"/>
+		<!-- 将数据库下划线字段名自动映射到驼峰命令 -->
+		<!--<setting name = "mapUnderscoreToCamelCase"
+				 value = "true"/>-->
 		<!--
 		关闭使用实际参数名
 		如果不设置，默认开启。旧版本默认关闭。
@@ -51,12 +52,24 @@ configuration
 		<!--<setting name = "useActualParamName"
 				 value = "false"/>-->
 
-		<!-- 配置开启日志 Log4j -->
+		<!-- 配置开启日志 Log4j
+			SLF4J、LOG4J、LOG4J2、JDK_LOGGING、COMMONS_LOGGING、STDOUT_LOGGING、NO_LOGGING
+		-->
 		<!--<setting name = "logImpl"
 				 value = "STDOUT_LOGGING"/>-->
 
 		<!-- 修改默认Null -->
-		<!--<setting name = "jdbcTypeForNull" value = "NULL"/>-->
+		<setting name = "jdbcTypeForNull"
+				 value = "NULL"/>
+		<!-- 开启延迟加载（懒加载）默认为关，显式指定每个我们需要更改的配置的值，即使它的默认的，防止版本更新带来的变化 -->
+		<setting name = "lazyLoadingEnabled"
+				 value = "true"/>
+		<!-- 如果开启，只要一个方法加了延迟加载的一个属性，其他属性也自动加载。 -->
+		<setting name = "aggressiveLazyLoading"
+				 value = "false"/>
+		<!-- 指定对象的哪些方法触发一次延迟加载。 -->
+		<setting name = "lazyLoadTriggerMethods"
+				 value = "equals,clone,hashCode,toString"/>
 	</settings>
 
 	<!--
@@ -72,7 +85,7 @@ configuration
 	-->
 	<typeAliases>
 		<!--<typeAlias type = "com.lft.mybatis.chapter02.entity.Employee" alias = "emp"/>-->
-		<package name = "com.lft.mybatis.chapter03.entity"/>
+		<package name = "com.lft.mybatis.chapter04.entity"/>
 	</typeAliases>
 	<!--
 		4. environments标签:用于配置多种环境
@@ -157,6 +170,6 @@ configuration
 		<!--<mapper resource = "com/lft/mybatis/chapter02/mapper/EmployeeMapper.xml"/>-->
 		<!--<mapper url = "file:///var/mappers/AuthorMapper.xml"/>-->
 		<!--<mapper class = "com.lft.mybatis.chapter02.dao.EmployeeMapperAnnotation"/>-->
-		<package name = "com.lft.mybatis.chapter03.dao"/>
+		<package name = "com.lft.mybatis.chapter04.dao"/>
 	</mappers>
 </configuration>

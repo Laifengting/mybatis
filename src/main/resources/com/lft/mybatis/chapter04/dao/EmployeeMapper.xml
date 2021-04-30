@@ -6,7 +6,7 @@
 	namespace:名称空间（类似于包名+类名，用于找到 SQL 语句所有的 mapper.xml 文件）
 	指定为接口的全类名
 -->
-<mapper namespace = "com.lft.mybatis.chapter03.dao.EmployeeMapper">
+<mapper namespace = "com.lft.mybatis.chapter04.dao.EmployeeMapper">
 
 	<!--
 	  select 标签
@@ -18,7 +18,7 @@
 	<!-- Employee getEmpById(Integer id); -->
 	<!-- 根据 id 查询员工 -->
 	<select id = "getEmpById"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{id}
@@ -27,7 +27,7 @@
 	<!-- Employee getEmpByIdAndLastName(@Param ("id") Integer id, @Param ("lastName") String lastName); -->
 	<!-- 带注解 -->
 	<select id = "getEmpByIdAndLastName"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{id}
@@ -38,7 +38,7 @@
 	<!-- 必须开启使用实际参数名 -->
 	<!-- 不带注解 多于两个参数 -->
 	<select id = "getEmpByIdAndLastName1"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{id}
@@ -48,7 +48,7 @@
 	<!-- Employee getEmpByIdAndLastName2(Integer id, String lastName); -->
 	<!-- 必须关闭使用实际参数名 -->
 	<select id = "getEmpByIdAndLastName2"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{0}
@@ -58,7 +58,7 @@
 	<!-- Employee getEmpByIdAndLastName3(Integer id, String lastName); -->
 	<!-- 必须开启使用实际参数名 -->
 	<select id = "getEmpByIdAndLastName3"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{arg0}
@@ -67,11 +67,38 @@
 
 	<!--   Employee getEmpByMap(Map<String, Object> map); -->
 	<select id = "getEmpByMap"
-			resultType = "com.lft.mybatis.chapter03.entity.Employee">
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
 		SELECT *
 			FROM tbl_employee
 			WHERE id = #{id}
 			  AND last_name = #{lastName}
+	</select>
+
+	<!-- List<Employee> getEmpByLastNameLike(@Param ("lastName") String lastName); -->
+	<!--
+		resultType：如果返回的是一个集合，这里的返回类型要写集合中元素的类型
+	-->
+	<select id = "getEmpByLastNameLike"
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
+		SELECT *
+			FROM tbl_employee
+			WHERE last_name LIKE CONCAT("%",#{lastName},"%")
+	</select>
+
+	<!-- Map<String, Object> getEmpByIdReturnMap(Integer id); -->
+	<select id = "getEmpByIdReturnMap"
+			resultType = "java.util.Map">
+		SELECT *
+			FROM tbl_employee
+			WHERE id = #{id};
+	</select>
+
+	<!-- Map<Integer, Employee> getEmpByLastNameLikeReturnMap(String lastName); -->
+	<select id = "getEmpByLastNameLikeReturnMap"
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
+		SELECT *
+			FROM tbl_employee
+			WHERE last_name LIKE CONCAT("%",#{lastName},"%")
 	</select>
 
 	<!--
@@ -81,10 +108,10 @@
 		useGeneratedKeys:使用自动生成的主键
 		keyProperty:指定主键自动生成的值封装给哪个属性
 	-->
-	<!--	void addEmp(Employee employee);-->
+	<!-- void addEmp(Employee employee);-->
 	<!-- 添加员工 -->
 	<insert id = "addEmp"
-			parameterType = "com.lft.mybatis.chapter03.entity.Employee"
+			parameterType = "com.lft.mybatis.chapter04.entity.Employee"
 			databaseId = "mysql"
 			useGeneratedKeys = "true"
 			keyProperty = "id">
@@ -100,7 +127,7 @@
 	<!--	void addEmp(Employee employee);-->
 	<!-- 添加员工 -->
 	<insert id = "addEmp"
-			parameterType = "com.lft.mybatis.chapter03.entity.Employee"
+			parameterType = "com.lft.mybatis.chapter04.entity.Employee"
 			databaseId = "oracle">
 		/*
 		keyProperty:查出的主键值封装给 JavaBean 的哪个属性
@@ -125,7 +152,7 @@
 
 	<!--	void updateEmp(Employee employee);-->
 	<update id = "updateEmp"
-			parameterType = "com.lft.mybatis.chapter03.entity.Employee">
+			parameterType = "com.lft.mybatis.chapter04.entity.Employee">
 		UPDATE tbl_employee
 		SET
 			last_name = #{lastName},

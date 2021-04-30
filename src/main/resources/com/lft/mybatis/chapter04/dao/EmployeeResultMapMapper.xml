@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	namespace:名称空间（类似于包名+类名，用于找到 SQL 语句所有的 mapper.xml 文件）
+	指定为接口的全类名
+-->
+<mapper namespace = "com.lft.mybatis.chapter04.dao.EmployeeResultMapMapper">
+	<!-- Employee getEmpById(Integer id); -->
+	<!--
+		自定义某个 JavaBean 的封装规则
+		id：规则的唯一标识
+		type：自定规则的 Java 类型
+		autoMapping：其他未指定的列会自动封装
+		extends：指定继承哪个结果集，这样会有先后执行顺序
+	-->
+	<resultMap id = "MyEmp"
+			   type = "com.lft.mybatis.chapter04.entity.Employee">
+		<!--
+			id 指定主键列的封装规则(底层有优化)
+				column：指定数据库中哪一列为主键
+				property：指定 JavaBean中的哪个属性接收对应主键的值
+				javaType：对应的 Java 类型
+				jdbcType：对应的 JDBC 类型
+				typeHandler：类型处理器
+		-->
+		<id column = "id"
+			property = "id"
+			javaType = "java.lang.Integer"
+			jdbcType = "INTEGER"
+			typeHandler = "org.apache.ibatis.type.IntegerTypeHandler"/>
+
+		<result column = "last_name"
+				property = "lastName"
+				javaType = "java.lang.String"
+				jdbcType = "VARCHAR"
+				typeHandler = "org.apache.ibatis.type.StringTypeHandler"/>
+		<result column = "email"
+				property = "email"/>
+		<result column = "gender"
+				property = "gender"/>
+		<!-- 其他没有指定的列会自动封装。 -->
+		<!-- 【建议】只要写了 resultMap 就把全部的列映射规则都自定义好 -->
+	</resultMap>
+	<!--
+		resultMap：自定义结果集映射规则
+	-->
+	<select id = "getEmpById"
+			resultMap = "MyEmp">
+		SELECT *
+			FROM tbl_employee
+			WHERE id = #{id}
+	</select>
+
+	<!--
+		场景一：
+			查询 Employee 的同时，查询出所在部门信息
+			Employee ==> Department
+			一个员工与之对应的部门信息；
+	-->
+
+	<!-- 联合查询：级联属性封装1 -->
+	<resultMap id = "getEmpAndDept"
+			   type = "com.lft.mybatis.chapter04.entity.Employee">
+		<id column = "id"
+			property = "id"/>
+		<result column = "last_name"
+				property = "lastName"/>
+		<result column = "email"
+				property = "email"/>
+		<result column = "gender"
+				property = "gender"/>
+
+		<result column = "dept_id"
+				property = "dep.id"/>
+		<result column = "dept_name"
+				property = "dep.deptName"/>
+	</resultMap>
+
+	<!-- 联合查询：级联属性封装2 -->
+	<resultMap id = "getEmpAndDept2"
+			   type = "com.lft.mybatis.chapter04.entity.Employee">
+		<id column = "id"
+			property = "id"/>
+		<result column = "last_name"
+				property = "lastName"/>
+		<result column = "email"
+				property = "email"/>
+		<result column = "gender"
+				property = "gender"/>
+		<!--
+			association 可以指定联合查询的 JavaBean 对象
+			property:指定哪个属性是联合的对象。
+		-->
+		<association property = "dep"
+					 javaType = "com.lft.mybatis.chapter04.entity.Department">
+			<id column = "dept_id"
+				property = "id"/>
+			<result column = "dept_name"
+					property = "deptName"/>
+		</association>
+	</resultMap>
+	<select id = "getEmpAndDeptById"
+			resultMap = "getEmpAndDept2">
+		SELECT te.id id,
+			   te.last_name last_name,
+			   te.email email,
+			   te.gender gender,
+			   td.id dept_id,
+			   td.dept_name dept_name
+			FROM tbl_employee te,
+				 tbl_dept     td
+			WHERE te.dept_id = td.id
+			  AND te.id = #{id};
+	</select>
+
+	<!-- Employee getEmpByIdStep(Integer id); -->
+	<!--
+		使用 association 进行分步查询
+		第 1 步：先按照员工 id 查询员工信息
+		第 2 步：再按照在员工信息中获得到的部门 id 查询部门信息
+		第 3 步：将查询到的部门信息，设置到员工信息中。
+	-->
+	<resultMap id = "getEmpByStep"
+			   type = "com.lft.mybatis.chapter04.entity.Employee">
+		<id column = "id"
+			property = "id"/>
+		<result column = "last_name"
+				property = "lastName"/>
+		<result column = "email"
+				property = "email"/>
+		<result column = "gender"
+				property = "gender"/>
+		<!--
+			使用 association 定义关联对象的封装规则
+		 		property：
+		 		select：表明当前属性是调用 select 指定的方法查询数据库获得的。
+		 		column：指定将哪一列的值传给这个方法
+		 	流程：使用 select 指定的方法，通过 column 指定的参数传入的方法，查出对象。并封装给 property 指定的属性
+
+		 	可以实现延迟加载
+				Employee ==> Dept
+				每次查询 Employee 对象的时候，都一起将部门信息查询出来。
+				延迟加载就可以使部门信息在我们使用的时候再查询出来。
+				其他分步查询的基础之上，加上两个配置。① 在全局配置
+		-->
+		<association property = "dep"
+					 select = "com.lft.mybatis.chapter04.dao.DepartmentMapper.getDeptById"
+					 column = "dept_id"></association>
+	</resultMap>
+	<select id = "getEmpByIdStep"
+			resultMap = "getEmpByStep2">
+		SELECT *
+			FROM tbl_employee
+			WHERE id = #{id}
+	</select>
+
+	<!-- Employee getEmpByIdStep2(Integer id); -->
+	<resultMap id = "getEmpByStep2"
+			   type = "com.lft.mybatis.chapter04.entity.Employee">
+		<id column = "id"
+			property = "id"/>
+		<result column = "last_name"
+				property = "lastName"/>
+		<result column = "email"
+				property = "email"/>
+		<result column = "gender"
+				property = "gender"/>
+		<!--
+			discriminator：鉴别器，MyBatis 可以判断某列的值，然后根据某列的值改变封装行为。
+			封装 Employee：
+				如果查出的是女生，就把部门信息查询出来。否则不查询。
+				如果查出的是男生，就把 last_name 这一列的值赋值给 email;
+
+			javaType：列值对应的 Java 类型
+			column：指定要判断的列名
+		-->
+		<discriminator javaType = "java.lang.String"
+					   column = "gender">
+			<!-- 女生 -->
+			<!-- resultType：指定封装类型，不能缺省 也可以自定义 resultMap 新的封装规则-->
+			<case value = "0"
+				  resultType = "com.lft.mybatis.chapter04.entity.Employee">
+				<association property = "dep"
+							 select = "com.lft.mybatis.chapter04.dao.DepartmentMapper.getDeptById"
+							 column = "dept_id"></association>
+			</case>
+			<!-- 男生 -->
+			<case value = "1">
+				<id column = "id"
+					property = "id"/>
+				<result column = "last_name"
+						property = "lastName"/>
+				<result column = "last_name"
+						property = "email"/>
+				<result column = "gender"
+						property = "gender"/>
+			</case>
+		</discriminator>
+	</resultMap>
+	<select id = "getEmpByIdStep2"
+			resultMap = "getEmpByStep2">
+		SELECT *
+			FROM tbl_employee
+			WHERE id = #{id}
+	</select>
+
+	<!--
+		场景2：查询部门的时候，将部门对应的所有员工信息也查询出来。
+			具体见：DepartmentMapper.xml
+	-->
+	<select id = "getEmpByDeptId"
+			resultType = "com.lft.mybatis.chapter04.entity.Employee">
+		SELECT id, last_name lastname, gender, email, dept_id
+			FROM tbl_employee
+			WHERE dept_id = #{deptId}
+	</select>
+
+</mapper>

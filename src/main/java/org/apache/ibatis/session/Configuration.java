@@ -927,6 +927,14 @@ public class Configuration {
 		mapperRegistry.addMapper(type);
 	}
 	
+	/**
+	 * 配置对象中维护了 MapperRegistry Mapper 注册器对象。
+	 * 调用 Mapper 注册器的 getMapper() 方法来获取 Mapper 接口的实现类，或者代理类。
+	 * @param type
+	 * @param sqlSession
+	 * @param <T>
+	 * @return
+	 */
 	public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
 		return mapperRegistry.getMapper(type, sqlSession);
 	}

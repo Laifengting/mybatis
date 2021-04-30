@@ -306,6 +306,12 @@ public class DefaultSqlSession implements SqlSession {
 		return configuration;
 	}
 	
+	/**
+	 * 通过配置对象，调用 getMapper() 方法
+	 * @param type Mapper interface class
+	 * @param <T>
+	 * @return
+	 */
 	@Override
 	public <T> T getMapper(Class<T> type) {
 		return configuration.getMapper(type, this);

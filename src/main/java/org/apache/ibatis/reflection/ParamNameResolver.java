@@ -54,39 +54,62 @@ public class ParamNameResolver {
 	
 	private boolean hasParamAnnotation;
 	
+	/**
+	 * 构造器，通过配置类和方法，初始化参数names等属性。
+	 * @param config
+	 * @param method
+	 */
 	public ParamNameResolver(Configuration config, Method method) {
+		// 在配置中读取是否使用实际参数名的值，赋值给 当前属性。
 		this.useActualParamName = config.isUseActualParamName();
+		// 从方法对象中读取所有的参数类型。
 		final Class<?>[] paramTypes = method.getParameterTypes();
+		// 从方法对象中读取所有的注解。
 		final Annotation[][] paramAnnotations = method.getParameterAnnotations();
+		// 新建一个排序的Map
 		final SortedMap<Integer, String> map = new TreeMap<>();
+		// 获取到注解的数量。
 		int paramCount = paramAnnotations.length;
 		// get names from @Param annotations
+		// 遍历所有的注解。获取到注解的名称。
 		for (int paramIndex = 0; paramIndex < paramCount; paramIndex++) {
+			// 检查参数类型是不是特殊参数
 			if (isSpecialParameter(paramTypes[paramIndex])) {
 				// skip special parameters
 				continue;
 			}
 			String name = null;
+			// 遍历每个参数注解
 			for (Annotation annotation : paramAnnotations[paramIndex]) {
+				// 判断是不是属于 Param 注解
 				if (annotation instanceof Param) {
+					// 如果是，把 有 Param注解标记设置为 true
 					hasParamAnnotation = true;
+					// 获取注解中的自定的名称。
 					name = ((Param) annotation).value();
 					break;
 				}
 			}
+			// 判断自定义注解中的参数名是不是为null
 			if (name == null) {
 				// @Param was not specified.
+				// 如果为空，说明没有定义注解，再判断是不是使用实际参数名,默认是开启的。
 				if (useActualParamName) {
+					// 多方法和参数索引中获取实际参数名
 					name = getActualParamName(method, paramIndex);
 				}
+				// 此时如果name 还是 null,说明关闭了使用实际参数名
 				if (name == null) {
 					// use the parameter index as the name ("0", "1", ...)
 					// gcode issue #71
+					// 把数字当作参数名，因为第一次 map 是空的。所以从 0 开始。
 					name = String.valueOf(map.size());
 				}
 			}
+			// 循环判断结果，把参数索引，和参数名放到 map 中。
 			map.put(paramIndex, name);
 		}
+		// 把收集完的参数名，返回给 names
 		names = Collections.unmodifiableSortedMap(map);
 	}
 	
@@ -117,25 +140,41 @@ public class ParamNameResolver {
 	 * @return the named params
 	 */
 	public Object getNamedParams(Object[] args) {
+		// 获取参数名的数量
 		final int paramCount = names.size();
+		// 判断如果要转换的参数为null,参数的数量为0，直接返回null
 		if (args == null || paramCount == 0) {
 			return null;
-		} else if (!hasParamAnnotation && paramCount == 1) {
+		}
+		// 判断如果参数没有注解并且参数为一个。
+		else if (!hasParamAnnotation && paramCount == 1) {
+			// 就将这唯一的一个参数包装后返回。
 			Object value = args[names.firstKey()];
 			return wrapToMapIfCollection(value, useActualParamName ? names.get(0) : null);
-		} else {
+		}
+		// 有注解 或者 参数数量不只一个
+		else {
+			// 创建一个Map
 			final Map<String, Object> param = new ParamMap<>();
 			int i = 0;
+			// 遍历 所有参数名。
 			for (Map.Entry<Integer, String> entry : names.entrySet()) {
+				// 把参数的值作为 key,原先排序 Map 中的key 也就是序号作为 value 放到新的 param 数组中
+				// 目的就是 把 id,lastName 作为 key，把传入的参数args[0],args[1]作为值
 				param.put(entry.getValue(), args[entry.getKey()]);
 				// add generic param names (param1, param2, ...)
+				// 拼接默认参数名 就是 param1，...，paramN
 				final String genericParamName = GENERIC_NAME_PREFIX + (i + 1);
 				// ensure not to overwrite parameter named with @Param
+				// 判断一下，确保不会覆盖参数名
 				if (!names.containsValue(genericParamName)) {
+					// 然后以 拼接的参数名 param1 为 key, 把传入的参数args[0],args[1]作为值
 					param.put(genericParamName, args[entry.getKey()]);
 				}
+				// i + 1,让循环下一次的时候 param1 变成 param2
 				i++;
 			}
+			// 返回 参数 Map
 			return param;
 		}
 	}
@@ -164,7 +203,7 @@ public class ParamNameResolver {
 			// 返回 map
 			return map;
 		}
-		// 判断参数非，并且属于数组
+		// 判断参数非空，并且属于数组
 		else if (object != null && object.getClass().isArray()) {
 			// 创建一个 HashMap 子类对象
 			ParamMap<Object> map = new ParamMap<>();
@@ -174,7 +213,7 @@ public class ParamNameResolver {
 			// 返回 map
 			return map;
 		}
-		// 如果不属于集合也不是数组直接返回该参数
+		// 如果不属于集合也不是数组，直接返回该参数
 		return object;
 	}
 	

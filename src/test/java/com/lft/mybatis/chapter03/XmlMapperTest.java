@@ -21,7 +21,7 @@ import java.io.InputStream;
  * @version 1.0.0
  * @since JDK 8
  */
-public class CrudTest {
+public class XmlMapperTest {
 	
 	@Test
 	public void testAddEmployee() {
@@ -36,7 +36,7 @@ public class CrudTest {
 			// 【注意】该方法不会自动提交
 			sqlSession = sqlSessionFactory.openSession();
 			
-			// 3. 获取 EmployeeMapper 映射接口对象
+			// 3. 获取 EmployeeMapper 映射接口对象的代理实现类
 			EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
 			
 			// 4. 通过接口对象调用相应的方法执行数据库操作。
@@ -55,6 +55,47 @@ public class CrudTest {
 			
 			// 7. 删除
 			// System.out.println(mapper.deleteEmpById(9));
+			
+			// 【注意】 openSession() 无参方法默认不会自动提交。需要手动提交。
+			sqlSession.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// 5. 关闭 SqlSession
+			sqlSession.close();
+		}
+	}
+	
+	@Test
+	public void testSelectWithMoreParams() {
+		SqlSession sqlSession = null;
+		try {
+			// 1. 根据 xml 配置文件（全局配置文件）创建一个 SqlSessionFactory 对象
+			String resource = "com/lft/mybatis/chapter03/mybatis-config.xml";
+			InputStream inputStream = Resources.getResourceAsStream(resource);
+			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+			
+			// 2. 获取 SqlSession 对象，能直接执行已经映射的 sql 语句
+			// 【注意】该方法不会自动提交
+			sqlSession = sqlSessionFactory.openSession();
+			
+			// 3. 获取 EmployeeMapper 映射接口对象
+			EmployeeMapper mapper = sqlSession.getMapper(EmployeeMapper.class);
+			
+			// 4. 通过接口对象调用相应的方法执行数据库操作。
+			// 单个参数
+			// Employee employee = mapper.getEmpById(10);
+			// 多个参数
+			// Employee employee = mapper.getEmpByIdAndLastName(10, "SuHai");
+			// Employee employee = mapper.getEmpByIdAndLastName1(10, "SuHai");
+			// Employee employee = mapper.getEmpByIdAndLastName2(10, "SuHai");
+			Employee employee = mapper.getEmpByIdAndLastName3(10, "SuHai");
+			// 参数是一个 Map 集合
+			// Map<String, Object> map = new HashMap<>();
+			// map.put("id", 10);
+			// map.put("lastName", "SuHai");
+			// Employee employee = mapper.getEmpByMap(map);
+			System.out.println(employee);
 			
 			// 【注意】 openSession() 无参方法默认不会自动提交。需要手动提交。
 			sqlSession.commit();
